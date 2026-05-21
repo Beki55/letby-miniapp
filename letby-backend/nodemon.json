@@ -1,0 +1,6 @@
+{
+  "watch": ["src"],
+  "ext": "ts,json",
+  "ignore": ["src/generated/**"],
+  "exec": "tsx --import dotenv/config src/server.ts"
+}

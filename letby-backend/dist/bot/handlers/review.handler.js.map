@@ -1,0 +1,1 @@
+{"version":3,"file":"review.handler.js","sourceRoot":"","sources":["../../../src/bot/handlers/review.handler.ts"],"names":[],"mappings":"AAGA,MAAM,CAAC,MAAM,qBAAqB,GAAG,CAAC,GAAsB,EAAQ,EAAE;IACpE,GAAG,CAAC,OAAO,CAAC,QAAQ,EAAE,KAAK,EAAE,GAAG,EAAE,EAAE;QAClC,MAAM,GAAG,CAAC,KAAK,CACb,kEAAkE,CACnE,CAAC;IACJ,CAAC,CAAC,CAAC;AACL,CAAC,CAAC"}

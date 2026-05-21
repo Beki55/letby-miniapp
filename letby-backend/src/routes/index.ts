@@ -1,0 +1,23 @@
+import { Router } from "express";
+
+import adminRoutes from "../modules/admin/admin.routes.js";
+import authRoutes from "../modules/auth/auth.routes.js";
+import listingsRoutes from "../modules/listings/listings.routes.js";
+import notificationsRoutes from "../modules/notifications/notifications.routes.js";
+import reportsRoutes from "../modules/reports/reports.routes.js";
+import reviewsRoutes from "../modules/reviews/reviews.routes.js";
+import usersRoutes from "../modules/users/users.routes.js";
+import verificationRoutes from "../modules/verification/verification.routes.js";
+
+const router = Router();
+
+router.use("/auth", authRoutes);
+router.use("/listings", listingsRoutes);
+router.use("/users", usersRoutes);
+router.use("/reviews", reviewsRoutes);
+router.use("/verification", verificationRoutes);
+router.use("/reports", reportsRoutes);
+router.use("/admin", adminRoutes);
+router.use("/notifications", notificationsRoutes);
+
+export default router;
