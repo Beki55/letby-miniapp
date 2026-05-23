@@ -85,7 +85,10 @@ async function resolveAuthSession(): Promise<AuthSession> {
     console.error("Token validation failed:", error);
     return {
       ...createAnonymousSession(isTelegram),
-      error: error instanceof ApiError ? error.message : "Unable to reach the backend. Check VITE_API_URL.",
+      error:
+        error instanceof ApiError
+          ? error.message
+          : "Unable to reach the backend. Check VITE_API_URL.",
     };
   }
 }
