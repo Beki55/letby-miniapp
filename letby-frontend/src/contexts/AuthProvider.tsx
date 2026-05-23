@@ -22,6 +22,7 @@ interface AuthContextValue {
   isTelegram: boolean;
   logout: () => void;
   refresh: () => Promise<void>;
+  error: string | null;
 }
 
 const AuthContext = createContext<AuthContextValue | null>(null);
@@ -31,6 +32,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   const [user, setUser] = useState<PublicUser | null>(null);
   const [token, setToken] = useState<string | null>(null);
   const [isTelegram, setIsTelegram] = useState(false);
+  const [error, setError] = useState<string | null>(null);
 
   // Guard against double-mounting in React 18 StrictMode
   const didRun = useRef(false);
@@ -61,9 +63,15 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       try {
         const result = await loginWithTelegram(initData);
         applySession(result.token, result.user);
+        setError(null);
         return;
-      } catch (error) {
-        console.error("Telegram auto-login failed:", error);
+      } catch (err: unknown) {
+        console.error("Telegram auto-login failed:", err);
+        if (err instanceof ApiError) {
+          setError(err.message);
+        } else {
+          setError("Failed to auto-login. Please try again.");
+        }
         // If we're inside Telegram and the login fails, fall through to
         // check for a stored token — the user may have logged in before.
       }
@@ -122,8 +130,8 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   }, [authenticate]);
 
   const value = useMemo(
-    () => ({ status, user, token, isTelegram, logout, refresh }),
-    [status, user, token, isTelegram, logout, refresh]
+    () => ({ status, user, token, isTelegram, logout, refresh, error }),
+    [status, user, token, isTelegram, logout, refresh, error]
   );
 
   return <AuthContext.Provider value={value}>{children}</AuthContext.Provider>;
