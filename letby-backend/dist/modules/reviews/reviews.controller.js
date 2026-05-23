@@ -1,5 +1,6 @@
 import { asyncHandler } from "../../utils/asyncHandler.js";
 import { UnauthorizedError } from "../../utils/errors.js";
+import { asRouteParam } from "../../utils/params.js";
 import * as reviewsService from "./reviews.service.js";
 export const createReview = asyncHandler(async (req, res) => {
     if (!req.user) {
@@ -10,7 +11,7 @@ export const createReview = asyncHandler(async (req, res) => {
     res.status(201).json({ success: true, review });
 });
 export const listReviewsForSeller = asyncHandler(async (req, res) => {
-    const reviews = await reviewsService.getReviewsForSeller(req.params.sellerId);
+    const reviews = await reviewsService.getReviewsForSeller(asRouteParam(req.params.sellerId));
     res.json({ success: true, reviews });
 });
 //# sourceMappingURL=reviews.controller.js.map

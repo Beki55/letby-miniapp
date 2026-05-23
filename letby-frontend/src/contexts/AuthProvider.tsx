@@ -4,6 +4,7 @@ import {
   useContext,
   useEffect,
   useMemo,
+  useRef,
   useState,
   type ReactNode,
 } from "react";
@@ -31,6 +32,9 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   const [token, setToken] = useState<string | null>(null);
   const [isTelegram, setIsTelegram] = useState(false);
 
+  // Guard against double-mounting in React 18 StrictMode
+  const didRun = useRef(false);
+
   const applySession = useCallback((nextToken: string, nextUser: PublicUser) => {
     setStoredToken(nextToken);
     setToken(nextToken);
@@ -46,15 +50,26 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   }, []);
 
   const authenticate = useCallback(async () => {
-    setIsTelegram(isTelegramWebApp());
+    const inTelegram = isTelegramWebApp();
+    setIsTelegram(inTelegram);
 
+    // ── 1. Try Telegram Mini App auto-login ──
+    // When opened inside Telegram, initData is always available and we
+    // use it to authenticate automatically — no login screen needed.
     const initData = await getTelegramInitData();
     if (initData) {
-      const result = await loginWithTelegram(initData);
-      applySession(result.token, result.user);
-      return;
+      try {
+        const result = await loginWithTelegram(initData);
+        applySession(result.token, result.user);
+        return;
+      } catch (error) {
+        console.error("Telegram auto-login failed:", error);
+        // If we're inside Telegram and the login fails, fall through to
+        // check for a stored token — the user may have logged in before.
+      }
     }
 
+    // ── 2. Try existing JWT from localStorage ──
     const stored = getStoredToken();
     if (!stored) {
       setStatus("anonymous");
@@ -69,18 +84,24 @@ export function AuthProvider({ children }: { children: ReactNode }) {
         clearSession();
         return;
       }
-      throw error;
+      // Network errors etc. — mark anonymous so the app is usable
+      console.error("Token validation failed:", error);
+      clearSession();
     }
   }, [applySession, clearSession]);
 
   useEffect(() => {
+    // Prevent double-run in StrictMode
+    if (didRun.current) return;
+    didRun.current = true;
+
     let cancelled = false;
 
     (async () => {
       try {
         await authenticate();
       } catch (error) {
-        console.error("Auth failed:", error);
+        console.error("Auth initialisation error:", error);
         if (!cancelled) {
           clearSession();
         }

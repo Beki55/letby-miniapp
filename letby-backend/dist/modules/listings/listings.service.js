@@ -42,11 +42,21 @@ export const updateListing = async (id, sellerId, input) => {
     if (!existing || existing.sellerId !== sellerId) {
         return null;
     }
-    const updated = {
-        ...existing,
-        ...input,
-        images: input.images ?? existing.images,
-    };
+    const updated = { ...existing };
+    if (input.title !== undefined)
+        updated.title = input.title;
+    if (input.description !== undefined)
+        updated.description = input.description;
+    if (input.price !== undefined)
+        updated.price = input.price;
+    if (input.category !== undefined)
+        updated.category = input.category;
+    if (input.stock !== undefined)
+        updated.stock = input.stock;
+    if (input.images !== undefined)
+        updated.images = input.images;
+    if (input.minPrice !== undefined)
+        updated.minPrice = input.minPrice;
     listingsStore.set(id, updated);
     return updated;
 };

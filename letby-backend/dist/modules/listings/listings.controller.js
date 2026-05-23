@@ -1,5 +1,6 @@
 import { asyncHandler } from "../../utils/asyncHandler.js";
 import { NotFoundError, UnauthorizedError } from "../../utils/errors.js";
+import { asRouteParam } from "../../utils/params.js";
 import * as listingsService from "./listings.service.js";
 export const listListings = asyncHandler(async (req, res) => {
     const query = req.query;
@@ -7,7 +8,7 @@ export const listListings = asyncHandler(async (req, res) => {
     res.json({ success: true, ...result });
 });
 export const getListing = asyncHandler(async (req, res) => {
-    const listing = await listingsService.getListingById(req.params.id);
+    const listing = await listingsService.getListingById(asRouteParam(req.params.id));
     if (!listing) {
         throw new NotFoundError("Listing not found");
     }
@@ -24,7 +25,7 @@ export const updateListing = asyncHandler(async (req, res) => {
     if (!req.user) {
         throw new UnauthorizedError();
     }
-    const listing = await listingsService.updateListing(req.params.id, req.user.userId, req.body);
+    const listing = await listingsService.updateListing(asRouteParam(req.params.id), req.user.userId, req.body);
     if (!listing) {
         throw new NotFoundError("Listing not found or not owned by you");
     }
@@ -34,7 +35,7 @@ export const deleteListing = asyncHandler(async (req, res) => {
     if (!req.user) {
         throw new UnauthorizedError();
     }
-    const deleted = await listingsService.deleteListing(req.params.id, req.user.userId);
+    const deleted = await listingsService.deleteListing(asRouteParam(req.params.id), req.user.userId);
     if (!deleted) {
         throw new NotFoundError("Listing not found or not owned by you");
     }

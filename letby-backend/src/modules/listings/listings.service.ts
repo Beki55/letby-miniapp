@@ -11,7 +11,7 @@ export interface ListingRecord {
   price: number;
   category: string;
   stock: number;
-  minPrice?: number;
+  minPrice?: number | undefined;
   images: string[];
   sellerId: string;
   trustScore: number;
@@ -85,16 +85,14 @@ export const updateListing = async (
     return null;
   }
 
-  const updated: ListingRecord = {
-    ...existing,
-    title: input.title ?? existing.title,
-    description: input.description ?? existing.description,
-    price: input.price ?? existing.price,
-    category: input.category ?? existing.category,
-    stock: input.stock ?? existing.stock,
-    images: input.images ?? existing.images,
-    minPrice: input.minPrice ?? existing.minPrice,
-  };
+  const updated: ListingRecord = { ...existing };
+  if (input.title !== undefined) updated.title = input.title;
+  if (input.description !== undefined) updated.description = input.description;
+  if (input.price !== undefined) updated.price = input.price;
+  if (input.category !== undefined) updated.category = input.category;
+  if (input.stock !== undefined) updated.stock = input.stock;
+  if (input.images !== undefined) updated.images = input.images;
+  if (input.minPrice !== undefined) updated.minPrice = input.minPrice;
 
   listingsStore.set(id, updated);
   return updated;

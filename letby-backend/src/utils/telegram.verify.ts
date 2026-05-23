@@ -38,8 +38,8 @@ export const verifyTelegramInitData = (
       .join("\n");
 
     const secretKey = crypto
-      .createHmac("sha256", botToken)
-      .update("WebAppData")
+      .createHmac("sha256", "WebAppData")
+      .update(botToken)
       .digest();
 
     const calculatedHash = crypto

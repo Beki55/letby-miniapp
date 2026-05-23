@@ -14,6 +14,7 @@ declare const envSchema: z.ZodObject<{
     CLOUDINARY_API_KEY: z.ZodOptional<z.ZodString>;
     CLOUDINARY_API_SECRET: z.ZodOptional<z.ZodString>;
     API_BASE_URL: z.ZodOptional<z.ZodString>;
+    WEB_APP_URL: z.ZodOptional<z.ZodString>;
     ENABLE_TELEGRAM_BOT: z.ZodPipe<z.ZodDefault<z.ZodEnum<{
         true: "true";
         false: "false";
@@ -32,6 +33,7 @@ export declare const env: {
     CLOUDINARY_API_KEY?: string | undefined;
     CLOUDINARY_API_SECRET?: string | undefined;
     API_BASE_URL?: string | undefined;
+    WEB_APP_URL?: string | undefined;
 };
 export {};
 //# sourceMappingURL=env.d.ts.map

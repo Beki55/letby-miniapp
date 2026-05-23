@@ -6,7 +6,7 @@ export interface ListingRecord {
     price: number;
     category: string;
     stock: number;
-    minPrice?: number;
+    minPrice?: number | undefined;
     images: string[];
     sellerId: string;
     trustScore: number;

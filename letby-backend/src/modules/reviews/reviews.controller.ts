@@ -25,7 +25,7 @@ export const createReview = asyncHandler(
 
 export const listReviewsForSeller = asyncHandler(
   async (req: Request, res: Response): Promise<void> => {
-    const reviews = await reviewsService.getReviewsForSeller(req.params.sellerId!);
+    const reviews = await reviewsService.getReviewsForSeller(asRouteParam(req.params.sellerId as any));
     res.json({ success: true, reviews });
   }
 );

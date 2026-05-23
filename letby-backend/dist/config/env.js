@@ -13,6 +13,7 @@ const envSchema = z.object({
     CLOUDINARY_API_KEY: z.string().optional(),
     CLOUDINARY_API_SECRET: z.string().optional(),
     API_BASE_URL: z.string().url().optional(),
+    WEB_APP_URL: z.string().url().optional(),
     ENABLE_TELEGRAM_BOT: z
         .enum(["true", "false"])
         .default("false")

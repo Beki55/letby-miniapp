@@ -32,16 +32,17 @@ export const authenticateWithTelegram = async (
   const { user: telegramUser } = verified;
   const telegramId = BigInt(telegramUser.id);
 
-  const user = await prisma.user.upsert({
-    where: { telegramId },
-    create: {
-      telegramId,
-      firstName: telegramUser.first_name,
-      lastName: telegramUser.last_name ?? null,
-      username: telegramUser.username ?? null,
-      photoUrl: telegramUser.photo_url ?? null,
-    },
-    update: {
+  const existingUser = await prisma.user.findUnique({
+    where: { telegramId: telegramId as any },
+  });
+
+  if (!existingUser || !existingUser.phoneNumber) {
+    throw new UnauthorizedError("You must share your contact in the bot before accessing the miniapp.");
+  }
+
+  const user = await prisma.user.update({
+    where: { telegramId: telegramId as any },
+    data: {
       firstName: telegramUser.first_name,
       lastName: telegramUser.last_name ?? null,
       username: telegramUser.username ?? null,
