@@ -1,6 +1,6 @@
 import { createContext, useContext, useEffect, useRef, useState, type ReactNode } from "react";
 import { useQuery, useQueryClient } from "@tanstack/react-query";
-import { ApiError, fetchMe, loginWithTelegram } from "@/lib/api";
+import { ApiError, fetchMe, getApiBaseError, loginWithTelegram } from "@/lib/api";
 import { clearStoredToken, getStoredToken, setStoredToken } from "@/lib/auth-storage";
 import { getTelegramInitData, isTelegramWebApp } from "@/lib/telegram";
 import type { PublicUser } from "@/types/auth";
@@ -25,8 +25,20 @@ const createAnonymousSession = (isTelegram: boolean): AuthSession => ({
   error: null,
 });
 
+const getProductionConfigError = (): string | null => {
+  return getApiBaseError();
+};
+
 async function resolveAuthSession(): Promise<AuthSession> {
   const isTelegram = isTelegramWebApp();
+
+  const configError = getProductionConfigError();
+  if (configError) {
+    return {
+      ...createAnonymousSession(isTelegram),
+      error: configError,
+    };
+  }
 
   if (isTelegram) {
     const initData = await getTelegramInitData();
@@ -68,9 +80,13 @@ async function resolveAuthSession(): Promise<AuthSession> {
   } catch (error) {
     if (error instanceof ApiError && error.status === 401) {
       clearStoredToken();
+      return createAnonymousSession(isTelegram);
     }
     console.error("Token validation failed:", error);
-    return createAnonymousSession(isTelegram);
+    return {
+      ...createAnonymousSession(isTelegram),
+      error: error instanceof ApiError ? error.message : "Unable to reach the backend. Check VITE_API_URL.",
+    };
   }
 }
 
